@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-page: #f3f5f7;
+  --color-ink: #1b2430;
+  --color-muted: #5b6673;
+  --color-line: #dde2e8;
+  --color-brand: #0e6b6b;
+  --color-brand-dark: #0a5252;
+  --font-display: "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  @apply bg-page font-sans text-ink antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+.btn-primary,
+.btn-outline,
+.btn-danger {
+  @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-60;
+}
+.btn-primary {
+  @apply bg-brand text-white hover:bg-brand-dark;
+}
+.btn-outline {
+  @apply border border-line bg-white hover:bg-gray-50;
+}
+.btn-danger {
+  @apply border border-red-200 bg-white text-red-700 hover:bg-red-50;
+}
+.input {
+  @apply w-full rounded-md border border-line bg-white px-3 py-2 text-sm focus:outline-2 focus:outline-brand;
+}
+.label {
+  @apply mb-1 block text-sm font-medium;
+}
