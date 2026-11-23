@@ -194,7 +194,7 @@ export default async function CatalogPage({
                   {/* Detail button */}
                   <Link
                     href={`/books/${book.slug}`}
-                    className="btn-outline mt-auto mt-4 flex w-full justify-center py-2.5 text-xs sm:text-sm"
+                    className="btn-outline mt-auto  flex w-full justify-center py-2.5 text-xs sm:text-sm"
                   >
                     Lihat Detail
                   </Link>
