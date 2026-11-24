@@ -1,8 +1,8 @@
-import { desc, eq, or, like, and } from "drizzle-orm";
+import { desc, eq, or, like, and, inArray } from "drizzle-orm";
 import { ActionFeedback } from "@/app/components/action-feedback";
 import { verifyTransaction } from "@/actions/transactions";
 import { db } from "@/lib/db";
-import { transactions, users } from "@/lib/db/schema";
+import { transactionItems, transactions, users } from "@/lib/db/schema";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -51,6 +51,31 @@ export default async function AdminTransactionsPage({
     )
     .orderBy(desc(transactions.createdAt));
   ``;
+  const items = rows.length
+    ? await db
+        .select({
+          transactionId: transactionItems.transactionId,
+          bookTitle: transactionItems.bookTitle,
+          quantity: transactionItems.quantity,
+        })
+        .from(transactionItems)
+        .where(
+          inArray(
+            transactionItems.transactionId,
+            rows.map(({ transaction }) => transaction.id),
+          ),
+        )
+    : [];
+  const itemsByTransaction = new Map<
+    string,
+    { bookTitle: string; quantity: number }[]
+  >();
+  for (const item of items) {
+    const transactionItemsForRow =
+      itemsByTransaction.get(item.transactionId) ?? [];
+    transactionItemsForRow.push(item);
+    itemsByTransaction.set(item.transactionId, transactionItemsForRow);
+  }
   const pending = rows.filter(
     ({ transaction }) => transaction.status === "awaiting_verification",
   );
@@ -121,6 +146,16 @@ export default async function AdminTransactionsPage({
               </p>
               <p className="mt-1 text-sm text-muted">{transaction.status}</p>
             </div>
+          </div>
+          <div className="border-t border-line pt-3">
+            <p className="text-sm font-semibold">Buku dibeli</p>
+            <ul className="mt-1 space-y-1 text-sm text-muted">
+              {(itemsByTransaction.get(transaction.id) ?? []).map((item) => (
+                <li key={`${transaction.id}-${item.bookTitle}`}>
+                  {item.bookTitle} × {item.quantity}
+                </li>
+              ))}
+            </ul>
           </div>
           {transaction.paymentProof && (
             <a

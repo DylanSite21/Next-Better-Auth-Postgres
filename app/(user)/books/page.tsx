@@ -5,6 +5,7 @@ import { books, categories, stocks } from "@/lib/db/schema";
 import { BookCover } from "@/app/components/book-cover";
 import { formatCurrency } from "@/lib/utils";
 import { RscBoundaryProvider } from "@rsc-boundary/next";
+import { CatalogAnimation } from "@/app/components/catalog-animation";
 
 export const dynamic = "force-dynamic";
 
@@ -71,8 +72,9 @@ export default async function CatalogPage({
   return (
     <RscBoundaryProvider>
       <main className="space-y-10">
+        <CatalogAnimation />
         {/* Header */}
-        <section>
+        <section className="catalog-header">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-brand">
             Jelajahi Koleksi
           </p>
@@ -88,7 +90,7 @@ export default async function CatalogPage({
         </section>
 
         {/* Search */}
-        <form className="grid gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm sm:grid-cols-[1fr_230px_auto] sm:p-5">
+        <form className="catalog-search grid gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm sm:grid-cols-[1fr_230px_auto] sm:p-5">
           <input
             name="q"
             defaultValue={q}
@@ -113,7 +115,7 @@ export default async function CatalogPage({
         </form>
 
         {/* Results heading */}
-        <div className="flex items-center justify-between border-b border-line pb-4">
+        <div className="catalog-results flex items-center justify-between border-b border-line pb-4">
           <div>
             <h2 className="text-xl font-bold">Koleksi Buku</h2>
             <p className="mt-1 text-sm text-muted">
@@ -139,7 +141,7 @@ export default async function CatalogPage({
             {results.map(({ book, categoryName, stock }) => (
               <li
                 key={book.id}
-                className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="book-card group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm hover:shadow-lg"
               >
                 {/* Cover */}
                 <Link

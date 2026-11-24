@@ -135,8 +135,12 @@ export function AdminBookForm({
             <input
               className="input"
               name="isbn"
+              type="text"
+              pattern="[0-9\-]*"
+              title="Hanya angka dan tanda hubung yang diperbolehkan"
+              inputMode="numeric"
               defaultValue={book?.isbn ?? ""}
-              maxLength={20}
+              maxLength={13}
             />
           </label>
 

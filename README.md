@@ -56,10 +56,10 @@ npm install
 
 4. Buka `http://localhost:3000`. Akun demo hasil seed:
 
-   | Peran | Email                  | Password        |
-   | ----- | ---------------------- | --------------- |
-   | Admin | `admin@bukuruang.test` | `Admin123!Demo` |
-   | User  | `user@bukuruang.test`  | `User123!Demo`  |
+   | Peran | Email                  | Password   |
+   | ----- | ---------------------- | ---------- |
+   | Admin | `admin@bukuruang.test` | `admin123` |
+   | User  | `user@bukuruang.test`  | `user123`  |
 
    Seed juga membuat 5 kategori dan 15 buku beserta stoknya. Seed aman dijalankan ulang: data yang sudah ada tidak dihapus atau ditimpa.
 
