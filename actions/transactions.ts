@@ -2,11 +2,46 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { stockMovements, stocks, transactionItems, transactions } from "@/lib/db/schema";
 import { requireAdmin, requireUser } from "@/lib/dal";
 import { deletePaymentProof, saveImage } from "@/lib/uploads";
 import type { FormState } from "@/lib/types";
+
+export async function deleteTransaction(
+  transactionId: string,
+  _: FormState,
+): Promise<FormState> {
+  const user = await requireUser();
+  if (user.role !== "user") {
+    return { error: "Hanya akun user yang dapat menghapus transaksi." };
+  }
+
+  const result = await db.transaction(async (tx) => {
+    const [transaction] = await tx.select({
+      id: transactions.id,
+      status: transactions.status,
+      paymentProof: transactions.paymentProof,
+    }).from(transactions)
+      .where(and(eq(transactions.id, transactionId), eq(transactions.userId, user.id)))
+      .for("update")
+      .limit(1);
+
+    if (!transaction) return { error: "Transaksi tidak ditemukan." } as const;
+    if (transaction.status !== "pending" || transaction.paymentProof) {
+      return { error: "Transaksi hanya dapat dihapus sebelum bukti pembayaran dikirim." } as const;
+    }
+
+    await tx.delete(transactions).where(eq(transactions.id, transaction.id));
+    return { deleted: true } as const;
+  });
+
+  if ("error" in result) return result;
+  revalidatePath("/transactions");
+  revalidatePath("/admin/transactions");
+  redirect("/transactions");
+}
 
 export async function uploadPaymentProof(
   transactionId: string,

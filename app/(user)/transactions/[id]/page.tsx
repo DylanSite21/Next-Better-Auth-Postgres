@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { eq, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { DeleteTransactionForm } from "@/app/components/delete-transaction-form";
 import { PaymentProofForm } from "@/app/components/payment-proof-form";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/dal";
@@ -168,6 +169,19 @@ export default async function TransactionDetailPage({
       {user.role === "user" &&
         ["pending", "rejected"].includes(transaction.status) && (
           <PaymentProofForm transactionId={transaction.id} />
+        )}
+      {user.role === "user" &&
+        transaction.status === "pending" &&
+        !transaction.paymentProof && (
+          <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-7">
+            <h2 className="text-lg font-bold">Tidak jadi membeli?</h2>
+            <p className="mt-2 text-sm text-muted">
+              Transaksi dapat dihapus sebelum bukti pembayaran dikirim.
+            </p>
+            <div className="mt-4">
+              <DeleteTransactionForm transactionId={transaction.id} />
+            </div>
+          </section>
         )}
     </div>
   );
