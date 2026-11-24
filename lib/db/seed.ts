@@ -1,7 +1,9 @@
 import "dotenv/config";
 import { randomUUID } from "node:crypto";
+import { readdir } from "node:fs/promises";
+import { join, extname } from "node:path";
 import { betterAuth } from "better-auth";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { authOptions } from "../auth-config";
 import { db, pool } from "./index";
 import { books, categories, stockMovements, stocks, users } from "./schema";
@@ -204,6 +206,29 @@ const sampleBooks = [
   },
 ];
 
+const bookImageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".jfif"]);
+
+function normalizeBookName(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+async function loadBookImages() {
+  const files = await readdir(join(process.cwd(), "public", "books-images"));
+  const images = new Map<string, string>();
+
+  for (const filename of files) {
+    const extension = extname(filename).toLowerCase();
+    if (!bookImageExtensions.has(extension)) continue;
+
+    const key = normalizeBookName(filename.slice(0, -extension.length));
+    if (!images.has(key)) {
+      images.set(key, `/books-images/${encodeURIComponent(filename)}`);
+    }
+  }
+
+  return images;
+}
+
 const demoAccounts = [
   {
     name: "Administrator Demo",
@@ -230,6 +255,8 @@ async function main() {
     );
   }
   try {
+    const bookImages = await loadBookImages();
+
     for (const category of sampleCategories) {
       const [existing] = await db
         .select({ id: categories.id })
@@ -250,7 +277,18 @@ async function main() {
         .from(books)
         .where(eq(books.slug, item.slug))
         .limit(1);
-      if (existing) continue;
+      const image =
+        bookImages.get(normalizeBookName(item.title)) ??
+        bookImages.get(normalizeBookName(item.slug)) ??
+        null;
+      if (existing) {
+        if (image) {
+          await db.update(books)
+            .set({ image })
+            .where(and(eq(books.id, existing.id), isNull(books.image)));
+        }
+        continue;
+      }
       const categoryIdValue = categoryId.get(item.category);
       if (!categoryIdValue)
         throw new Error(`Kategori ${item.category} tidak ditemukan.`);
@@ -268,6 +306,7 @@ async function main() {
           publicationYear: item.year,
           price: item.price,
           description: item.description,
+          image,
           status: "published",
         });
         await tx.insert(stocks).values({

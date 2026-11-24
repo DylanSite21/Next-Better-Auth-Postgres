@@ -11,7 +11,7 @@ Dibangun dengan Next.js (App Router), TypeScript, PostgreSQL, Drizzle ORM, dan B
 
 ![Landing Page](./preview-images/Landing-Page.png)
 
-![Katalog Page](./preview-images/Landing-Page.png)
+![Katalog Page](./preview-images/Katalog-Page.png)
 
 ## Daftar Isi
 
