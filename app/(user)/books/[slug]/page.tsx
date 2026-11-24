@@ -85,9 +85,7 @@ export default async function BookDetailPage({
 
             <p className="mt-4 text-base text-muted sm:text-lg">
               Ditulis oleh{" "}
-              <span className="font-semibold text-ink">
-                {row.book.author}
-              </span>
+              <span className="font-semibold text-ink">{row.book.author}</span>
             </p>
 
             {/* Price */}
@@ -107,9 +105,7 @@ export default async function BookDetailPage({
 
             {/* Specifications */}
             <div className="mt-8">
-              <h2 className="text-base font-bold text-ink">
-                Informasi Buku
-              </h2>
+              <h2 className="text-base font-bold text-ink">Informasi Buku</h2>
 
               <dl className="mt-4 grid grid-cols-2 gap-3">
                 {[
@@ -139,9 +135,7 @@ export default async function BookDetailPage({
 
             {/* Description */}
             <div className="mt-8">
-              <h2 className="text-base font-bold text-ink">
-                Deskripsi Buku
-              </h2>
+              <h2 className="text-base font-bold text-ink">Deskripsi Buku</h2>
 
               <p className="mt-3 whitespace-pre-line text-sm leading-8 text-muted">
                 {row.book.description || "Belum ada deskripsi untuk buku ini."}
@@ -170,7 +164,7 @@ export default async function BookDetailPage({
                       type="number"
                       name="quantity"
                       min="1"
-                      max="20"
+                      max={isAvailable ? availableStock : 0}
                       defaultValue="1"
                     />
 
@@ -201,7 +195,7 @@ export default async function BookDetailPage({
                       type="number"
                       name="quantity"
                       min="1"
-                      max="5"
+                      max={isAvailable ? availableStock : 0}
                       defaultValue="1"
                     />
 
