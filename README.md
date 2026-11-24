@@ -15,7 +15,7 @@ Dibangun dengan Next.js (App Router), TypeScript, PostgreSQL, Drizzle ORM, dan B
 
 ## Link Figma
 
-[![Figma](https://img.shields.io/badge/Figma-Design- violet?logo=figma)](<[LINK_FIGMA](https://www.figma.com/design/LfKPxaHjlC2Reg3njGOK4u/MockUp-BookStore?node-id=0-1&p=f&t=APd7c0yl4SIYjB1O-0)>)
+[![Figma](https://img.shields.io/badge/Figma-Design- violet?logo=figma)]([View Figma Design](https://www.figma.com/design/LfKPxaHjlC2Reg3njGOK4u/MockUp-BookStore?node-id=0-1&p=f&t=APd7c0yl4SIYjB1O-0))
 
 ## Daftar Isi
 
