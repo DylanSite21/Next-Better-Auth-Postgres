@@ -230,6 +230,8 @@ export const transactions = pgTable("transactions", {
   paymentMethod: paymentMethodEnum("payment_method").default("bank_transfer").notNull(),
   status: transactionStatusEnum("status").default("pending").notNull(),
   paymentProof: varchar("payment_proof", { length: 500 }),
+  recipientName: varchar("recipient_name", { length: 255 }),
+  shippingAddress: text("shipping_address"),
   verifiedBy: varchar("verified_by", { length: 36 }).references(() => users.id, { onDelete: "set null" }),
   verifiedAt: timestamp("verified_at"),
   paidAt: timestamp("paid_at"),

@@ -89,6 +89,17 @@ export default async function TransactionDetailPage({
           </p>
         )}
       </section>
+
+      {(transaction.recipientName || transaction.shippingAddress) && (
+        <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-7">
+          <h2 className="text-lg font-bold">Penerima</h2>
+          <p className="mt-3 font-semibold">{transaction.recipientName}</p>
+          <p className="mt-1 whitespace-pre-line text-sm text-muted">
+            {transaction.shippingAddress}
+          </p>
+        </section>
+      )}
+
       {transaction.paymentProof && (
         <a
           className="btn-outline w-full sm:w-auto"

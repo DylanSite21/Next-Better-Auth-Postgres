@@ -3,18 +3,19 @@
 import { useState, useTransition } from "react";
 import { updateCartItem } from "@/actions/cart";
 import { useCart } from "@/app/components/cart-context";
-
-const MIN_QUANTITY = 1;
-const MAX_QUANTITY = 20;
+import { MAX_CART_QUANTITY, MIN_CART_QUANTITY } from "@/lib/utils";
 
 export function CartQuantityControl({
   itemId,
   title,
   initialQuantity,
+  maxQuantity = MAX_CART_QUANTITY,
 }: {
   itemId: string;
   title: string;
   initialQuantity: number;
+  /** Batas atas tampilan (misalnya sesuai stok tersedia). Stok tetap dicek ulang saat checkout. */
+  maxQuantity?: number;
 }) {
   const [quantity, setQuantity] = useState(initialQuantity);
   const [isPending, startTransition] = useTransition();
@@ -22,16 +23,22 @@ export function CartQuantityControl({
   const { updateQuantity } = useCart();
 
   const updateItem = updateCartItem.bind(null, itemId);
+  const limit = Math.max(
+    MIN_CART_QUANTITY,
+    Math.min(MAX_CART_QUANTITY, maxQuantity),
+  );
 
   function handleQuantityChange(newQuantity: number) {
     const nextQuantity = Math.max(
-      MIN_QUANTITY,
-      Math.min(MAX_QUANTITY, newQuantity),
+      MIN_CART_QUANTITY,
+      Math.min(limit, newQuantity),
     );
 
     if (nextQuantity === quantity) return;
 
-    // Update tampilan secara langsung
+    const previousQuantity = quantity;
+
+    // Perbarui tampilan secara langsung
     setQuantity(nextQuantity);
     updateQuantity(itemId, nextQuantity);
 
@@ -40,7 +47,13 @@ export function CartQuantityControl({
     formData.set("quantity", String(nextQuantity));
 
     startTransition(async () => {
-      await updateItem(formData);
+      try {
+        await updateItem(formData);
+      } catch {
+        // Gagal menyimpan: kembalikan ke jumlah sebelumnya
+        setQuantity(previousQuantity);
+        updateQuantity(itemId, previousQuantity);
+      }
     });
   }
 
@@ -51,7 +64,7 @@ export function CartQuantityControl({
           type="button"
           className="btn-outline size-7 p-0"
           aria-label={`Tambah jumlah ${title}`}
-          disabled={quantity >= MAX_QUANTITY || isPending}
+          disabled={quantity >= limit || isPending}
           onClick={() => handleQuantityChange(quantity + 1)}
         >
           +
@@ -61,7 +74,7 @@ export function CartQuantityControl({
           type="button"
           className="btn-outline size-7 p-0"
           aria-label={`Kurangi jumlah ${title}`}
-          disabled={quantity <= MIN_QUANTITY || isPending}
+          disabled={quantity <= MIN_CART_QUANTITY || isPending}
           onClick={() => handleQuantityChange(quantity - 1)}
         >
           -

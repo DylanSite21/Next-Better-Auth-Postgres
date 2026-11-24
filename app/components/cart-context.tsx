@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-type CartItem = {
+export type CartItem = {
   id: string;
   quantity: number;
   price: number;
@@ -31,14 +31,29 @@ export function CartProvider({
 }) {
   const [items, setItems] = useState(initialItems);
 
+  // Sinkronkan dengan server saat daftar item berubah (misalnya setelah item dihapus).
+  // Perubahan jumlah tidak ikut disinkronkan di sini karena sudah diperbarui langsung
+  // lewat updateQuantity, jadi tampilan tidak berkedip dan fokus keyboard tidak hilang.
+  const serverIds = initialItems.map((item) => item.id).join(",");
+  const [syncedIds, setSyncedIds] = useState(serverIds);
+  if (serverIds !== syncedIds) {
+    setSyncedIds(serverIds);
+    setItems(initialItems);
+  }
+
   function updateQuantity(id: string, quantity: number) {
     setItems((current) =>
       current.map((item) => (item.id === id ? { ...item, quantity } : item)),
     );
   }
 
+  // Dihitung dalam satuan sen agar tidak ada selisih pecahan desimal
   const total = useMemo(
-    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    () =>
+      items.reduce(
+        (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
+        0,
+      ) / 100,
     [items],
   );
 

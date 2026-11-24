@@ -4,7 +4,13 @@ import { CheckoutForm } from "@/app/components/checkout-form";
 import { useCart } from "@/app/components/cart-context";
 import { formatCurrency } from "@/lib/utils";
 
-export function CartSummary() {
+export function CartSummary({
+  defaultName,
+  defaultAddress,
+}: {
+  defaultName: string;
+  defaultAddress: string;
+}) {
   const { total } = useCart();
 
   return (
@@ -20,7 +26,7 @@ export function CartSummary() {
         Stok akan diperiksa kembali saat pembayaran dikonfirmasi oleh admin.
       </p>
 
-      <CheckoutForm />
+      <CheckoutForm defaultName={defaultName} defaultAddress={defaultAddress} />
     </aside>
   );
 }

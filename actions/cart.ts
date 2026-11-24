@@ -7,8 +7,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { books, cartItems, carts, stocks, transactionItems, transactions } from "@/lib/db/schema";
 import { requireUser } from "@/lib/dal";
-import { addMoney, createReference, multiplyMoney } from "@/lib/utils";
 import type { FormState } from "@/lib/types";
+import { checkoutSchema } from "@/lib/validations/checkout";
+import { addMoney, createReference, MAX_CART_QUANTITY, MIN_CART_QUANTITY, multiplyMoney } from "@/lib/utils";
 
 export async function addToCart(bookId: string, formData: FormData) {
   const user = await requireUser();
@@ -50,7 +51,7 @@ export async function updateCartItem(itemId: string, formData: FormData) {
   const user = await requireUser();
   if (user.role !== "user") redirect("/admin");
   const quantity = Number(formData.get("quantity"));
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) redirect("/cart?error=quantity");
+  if (!Number.isInteger(quantity) || quantity < MIN_CART_QUANTITY || quantity > MAX_CART_QUANTITY) redirect("/cart?error=quantity");
   await db.update(cartItems).set({ quantity }).where(and(
     eq(cartItems.id, itemId),
     sql`${cartItems.cartId} IN (SELECT ${carts.id} FROM ${carts} WHERE ${carts.userId} = ${user.id})`,
@@ -70,10 +71,21 @@ export async function removeCartItem(itemId: string) {
 
 export async function checkout(state: FormState, formData: FormData): Promise<FormState> {
   void state;
-  void formData;
   const user = await requireUser();
   if (user.role !== "user") redirect("/admin");
+
+  const values = {
+    recipientName: String(formData.get("recipientName") ?? "").trim(),
+    shippingAddress: String(formData.get("shippingAddress") ?? "").trim(),
+  };
+  const parsed = checkoutSchema.safeParse(values);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Data pengiriman tidak valid.", values };
+  }
+  const { recipientName, shippingAddress } = parsed.data;
+
   const result = await db.transaction(async (tx) => {
+    // ...isi transaksi tetap sama
     const [cart] = await tx.select().from(carts).where(eq(carts.userId, user.id)).for("update").limit(1);
     if (!cart) return { error: "Keranjang Anda masih kosong." } as const;
     const cartRows = await tx.select().from(cartItems).where(eq(cartItems.cartId, cart.id)).for("update");
@@ -110,6 +122,7 @@ export async function checkout(state: FormState, formData: FormData): Promise<Fo
     await tx.insert(transactions).values({
       id: transactionId, userId: user.id, invoiceNumber, totalAmount,
       paymentMethod: "bank_transfer", status: "pending",
+      recipientName, shippingAddress,
     });
     await tx.insert(transactionItems).values(lines.map(({ book, item, subtotal }) => ({
       id: randomUUID(), transactionId, bookId: book.id, bookTitle: book.title,
@@ -120,7 +133,7 @@ export async function checkout(state: FormState, formData: FormData): Promise<Fo
     return { invoiceNumber } as const;
   });
 
-  if ("error" in result) return result;
+    if ("error" in result) return { ...result, values };
   revalidatePath("/cart");
   revalidatePath("/transactions");
   redirect(`/transactions/${result.invoiceNumber}`);

@@ -1,4 +1,6 @@
 export const LOAN_DAYS = 14;
+export const MIN_CART_QUANTITY = 1;
+export const MAX_CART_QUANTITY = 20;
 
 export function formatCurrency(value: string | number) {
   return new Intl.NumberFormat("id-ID", {
