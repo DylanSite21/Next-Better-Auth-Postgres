@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { books, categories, stocks } from "@/lib/db/schema";
 import { formatCurrency } from "@/lib/utils";
 import { BookAlert } from "@/app/components/admin-book-form";
-import ArchiveButton from "@/app/components/ArchiveButton";
+import DeleteBookButton from "@/app/components/DeleteBookButton";
 
 export const dynamic = "force-dynamic";
 
@@ -200,9 +200,7 @@ export default async function AdminBooksPage({
                     >
                       Ubah
                     </Link>
-                    {book.status !== "archived" && (
-                      <ArchiveButton bookId={book.id} bookTitle={book.title} />
-                    )}
+                    <DeleteBookButton bookId={book.id} bookTitle={book.title} />
                   </div>
                 </td>
               </tr>

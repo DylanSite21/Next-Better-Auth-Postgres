@@ -134,7 +134,13 @@ export default async function AdminTransactionsPage({
           <div className="flex flex-wrap justify-between gap-4">
             <div>
               <p className="text-xs text-muted">
-                {transaction.invoiceNumber} ·{" "}
+                <Link
+                  href={`/transactions/${transaction.invoiceNumber}`}
+                  className="font-semibold text-brand hover:underline"
+                >
+                  {transaction.invoiceNumber}
+                </Link>{" "}
+                ·{" "}
                 {formatDate(transaction.createdAt)}
               </p>
               <h2 className="mt-1 text-lg font-bold">{user.name}</h2>
@@ -156,6 +162,13 @@ export default async function AdminTransactionsPage({
                 </li>
               ))}
             </ul>
+          </div>
+          <div className="border-t border-line pt-3">
+            <p className="text-sm font-semibold">Penerima</p>
+            <p className="mt-1 text-sm">{transaction.recipientName || "—"}</p>
+            <p className="mt-1 whitespace-pre-line text-sm text-muted">
+              {transaction.shippingAddress || "Alamat belum tersedia."}
+            </p>
           </div>
           {transaction.paymentProof && (
             <a

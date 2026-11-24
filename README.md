@@ -13,6 +13,10 @@ Dibangun dengan Next.js (App Router), TypeScript, PostgreSQL, Drizzle ORM, dan B
 
 ![Katalog Page](./preview-images/Katalog-Page.png)
 
+## Link Figma
+
+[View Figma Design](https://www.figma.com/design/LfKPxaHjlC2Reg3njGOK4u/MockUp-BookStore?node-id=0-1&p=f&t=APd7c0yl4SIYjB1O-0)
+
 ## Daftar Isi
 
 1. [Petunjuk Teknis Bahasa Pemrograman Terkait](#1-petunjuk-teknis-bahasa-pemrograman-terkait)

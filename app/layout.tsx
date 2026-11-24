@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     default: "BukuRuang | Toko Buku & Perpustakaan",
     template: "%s | BukuRuang",
   },
+  icons: {
+    icon: "/book-icon.png",
+  },
   description: "Jelajahi, beli, dan pinjam buku dalam satu ruang.",
 };
 

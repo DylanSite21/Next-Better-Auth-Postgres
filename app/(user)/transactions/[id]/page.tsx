@@ -38,14 +38,18 @@ export default async function TransactionDetailPage({
     .select()
     .from(transactionItems)
     .where(eq(transactionItems.transactionId, transaction.id));
+  const backHref =
+    user.role === "admin" ? "/admin/transactions" : "/transactions";
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <Link
-        href="/transactions"
+        href={backHref}
         className="inline-flex text-sm font-semibold text-brand"
       >
-        ← Kembali ke pesanan
+        {user.role === "admin"
+          ? "← Kembali ke transaksi"
+          : "← Kembali ke pesanan"}
       </Link>
       <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-7">
         <div className="flex flex-wrap justify-between gap-4">

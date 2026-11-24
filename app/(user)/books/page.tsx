@@ -5,7 +5,7 @@ import { books, categories, stocks } from "@/lib/db/schema";
 import { BookCover } from "@/app/components/book-cover";
 import { formatCurrency } from "@/lib/utils";
 import { RscBoundaryProvider } from "@rsc-boundary/next";
-import { CatalogAnimation } from "@/app/components/catalog-animation";
+import { PageAnimation } from "@/app/components/page-animation";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +72,7 @@ export default async function CatalogPage({
   return (
     <RscBoundaryProvider>
       <main className="space-y-10">
-        <CatalogAnimation />
+        <PageAnimation />
         {/* Header */}
         <section className="catalog-header">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-brand">
